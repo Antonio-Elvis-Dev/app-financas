@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 
 import { useNavigation } from "@react-navigation/native";
 
+import Header from "../../components/Header";
+
 import {
   Container,
   Nome,
@@ -18,12 +20,13 @@ export default function Profile() {
 
   return (
     <Container>
+      <Header />
       <Nome>{user.nome}</Nome>
       <NewLink onPress={() => navigation.navigate("Registrar")}>
         <NewText>Registrar Gastos</NewText>
       </NewLink>
 
-      <Logout onPress={()=>signOut()}>
+      <Logout onPress={() => signOut()}>
         <LogoutText>Sair</LogoutText>
       </Logout>
     </Container>
