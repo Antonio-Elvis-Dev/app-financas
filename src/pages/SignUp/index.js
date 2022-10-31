@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
+import React, { useState, useContext } from "react";
+import { Platform } from "react-native";
 
 import {
   Background,
@@ -9,19 +9,31 @@ import {
   Input,
   SubmitButton,
   SubmitText,
-  Link,
-  LinkText,
-} from "./styles";
+} from "../SignIn/styles";
 
-export default function SingIn() {
+import { AuthContext } from "../../contexts/auth";
+
+export default function SignUp() {
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { signUp } = useContext(AuthContext);
 
+  function handleSignUp() {
+    signUp(email, password, nome);
+  }
   return (
     <Background>
-      <Container>
-        <Logo source={require("../../assets/Logo.png")} />
-
+      <Container behavior={Platform.OS === "ios" ? "padding" : ""} enabled>
+        <AreaInput>
+          <Input
+            placeholder="Nome"
+            autoCorrect={false}
+            autoCapitalize="none"
+            value={nome}
+            onChangeText={(texto) => setNome(texto)}
+          />
+        </AreaInput>
         <AreaInput>
           <Input
             placeholder="Email"
@@ -40,12 +52,9 @@ export default function SingIn() {
             onChangeText={(texto) => setPassword(texto)}
           />
         </AreaInput>
-        <SubmitButton>
-          <SubmitText>Acessar</SubmitText>
+        <SubmitButton onPress={handleSignUp}>
+          <SubmitText>Cadastrar-se</SubmitText>
         </SubmitButton>
-        <Link>
-          <LinkText>Criar Conta</LinkText>
-        </Link>
       </Container>
     </Background>
   );

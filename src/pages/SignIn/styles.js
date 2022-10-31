@@ -16,7 +16,7 @@ export const AreaInput = styled.View`
   flex-direction: row;
 `;
 export const Input = styled.TextInput.attrs({
-  placeholderTextColor: "rgba(255,255,255,0.20",
+  placeholderTextColor: "#407983",
 })`
   background: rgba(0, 0, 0, 0.2);
   width: 90%;
