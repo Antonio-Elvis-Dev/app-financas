@@ -1,39 +1,66 @@
-import React, { useContext, useState } from "react";
-
-import { AuthContext } from "../../contexts/auth";
-import Header from "../../components/Header";
-import HistoricoList from "../../components/HistoricoList";
+import React, { useContext, useState, useEffect } from "react";
 
 import { Background, Container, Nome, Saldo, Title, List } from "./styles";
+import { AuthContext } from "../../contexts/auth";
+import HistoricoList from "../../components/HistoricoList";
+import Header from "../../components/Header";
+import firebase from "../../services/firebaseConnection";
+import { format } from "date-fns";
+
 export default function Home() {
+  const [historico, setHistorico] = useState([]);
+  const [saldo, setSaldo] = useState(0);
+
   const { user } = useContext(AuthContext);
-  const [historico, setHistorico] = useState([
-    { key: "1", tipo: "receita", valor: 11200 },
-    { key: "2", tipo: "despesa", valor: 1200 },
-    { key: "3", tipo: "despesa", valor: 3200 },
-    { key: "4", tipo: "receita", valor: 1200 },
-    { key: "5", tipo: "receita", valor: 11200 },
-    { key: "6", tipo: "despesa", valor: 1200 },
-    { key: "7", tipo: "despesa", valor: 3200 },
-    { key: "8", tipo: "receita", valor: 1200 },
-    { key: "9", tipo: "receita", valor: 11200 },
-    { key: "10", tipo: "despesa", valor: 1200 },
-    { key: "11", tipo: "despesa", valor: 3200 },
-    { key: "12", tipo: "receita", valor: 1200 },
-  ]);
+  const uid = user && user.uid;
+
+  useEffect(() => {
+    async function loadList() {
+      await firebase
+        .database()
+        .ref("users")
+        .child(uid)
+        .on("value", (snapshot) => {
+          setSaldo(snapshot.val().saldo);
+        });
+
+      await firebase
+        .database()
+        .ref("historico")
+        .child(uid)
+        .orderByChild("date")
+        .equalTo(format(new Date(), "dd/MM/yyyy"))
+        .limitToLast(10)
+        .on("value", (snapshot) => {
+          setHistorico([]);
+
+          snapshot.forEach((childItem) => {
+            let list = {
+              key: childItem.key,
+              tipo: childItem.val().tipo,
+              valor: childItem.val().valor,
+            };
+            setHistorico(oldArray => [...oldArray, list].reverse())
+          });
+        });
+    }
+    loadList();
+  }, []);
   return (
     <Background>
       <Header />
       <Container>
-        <Nome>Elvis</Nome>
-        <Saldo>R$:15000</Saldo>
+        <Nome>{user && user.nome}</Nome>
+        <Saldo>
+          R$:{saldo.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}
+        </Saldo>
       </Container>
       <Title>Ultimas Movimentações</Title>
       <List
         showsVerticalScrollIndicator={false}
         data={historico}
         keyExtrator={(item) => item.key}
-        renderItem={({ item }) =>( <HistoricoList data={item}/>)}
+        renderItem={({ item }) => <HistoricoList data={item} />}
       />
     </Background>
   );
