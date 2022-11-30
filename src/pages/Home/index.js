@@ -77,7 +77,6 @@ export default function Home() {
     const formatDiaHoje = format(new Date(), "dd/MM/yyyy");
     const [diaHoje, mesHoje, anoHoje] = formatDiaHoje.split("/");
     const dataHoje = new Date(`${anoItem}/${mesItem}/${diaItem}`);
-    console.log(dataHoje);
     if (isBefore(dataItem, dataHoje)) {
       alert("Sem Permissão!");
 
@@ -133,7 +132,6 @@ export default function Home() {
   const onChange = (date) => {
     setShow(Platform.OS === "ios");
     setNewDate(date);
-    console.log(date);
   };
   return (
     <Background>
